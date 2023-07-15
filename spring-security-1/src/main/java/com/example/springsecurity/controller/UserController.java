@@ -29,19 +29,18 @@ public class UserController {
 	private UsersRepository usersRepository;
 
 	@GetMapping("/getAllUserAndAuthority")
-	public List<Authorities> getAllUserAndAuthority(Principal principal) {
-	
+	public List<Authorities> getAllUserAndAuthority(Principal principal) throws AccessDeniedException {
+
 		Users users = usersRepository.findByUsername(principal.getName());
 		Authorities authorities = authorityRepository.findByUsers(users);
-	
-		if(authorities.getAuthority()=="CEO") {
-		List<Authorities> findAll = authorityRepository.findAll();
-	
-		return findAll;
+
+		if (authorities.getAuthority() == "Super Admin") {
+			List<Authorities> findAll = authorityRepository.findAll();
+			return findAll;
+		} else {
+			throw new AccessDeniedException("Access Denied");
 		}
-		else {
-			return (List<Authorities>) new  AccessDeniedException("You dont have permission"); 
-		}
+
 	}
 
 	@GetMapping("/getOnlyUsers")
@@ -51,8 +50,9 @@ public class UserController {
 	}
 
 	@GetMapping("/getSingleUsersAndAuthority/{username}")
-	public Authorities getSingleUsersAndAuthority(@PathVariable Users username) {
+	public Authorities getSingleUsersAndAuthority(@PathVariable Users username, Principal principal) {
 		Authorities singleUsersAndAuthority = authorityRepository.findByUsers(username);
+
 		return singleUsersAndAuthority;
 
 	}
@@ -77,7 +77,7 @@ public class UserController {
 		return "authority deleted";
 
 	}
-	
+
 	@DeleteMapping("/deleteUserAndAuthority/{username}")
 	public String deleteUserAndAuthority(@PathVariable String username) {
 		Users users = usersRepository.findByUsername(username);
@@ -85,9 +85,8 @@ public class UserController {
 		Authorities authorities = authorityRepository.findByUsers(users);
 		authorityRepository.delete(authorities);
 		usersRepository.delete(users);
-		
+
 		return "user and authority both deleted successfully";
 	}
-	
-	
+
 }

@@ -44,7 +44,7 @@ public class MySpringSecurityConfiguration {
 				.authorizeHttpRequests(auth -> {
 					auth.requestMatchers("/", "/public").permitAll();
 					auth.requestMatchers("/secretpoint").hasAuthority("Admin");
-					auth.requestMatchers("/userRequest/**").hasAuthority("CEO");
+					auth.requestMatchers("/userRequest/**").hasAuthority("Super Admin");
 					auth.anyRequest().authenticated();
 
 				})
